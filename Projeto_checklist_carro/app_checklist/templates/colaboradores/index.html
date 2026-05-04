@@ -1,3 +1,5 @@
+
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -12,49 +14,76 @@
   </head>
 
   <style>
-  /* Quando o input estiver com foco, muda a borda do grupo inteiro */
+  /* Efeito de foco para o grupo inteiro */
   .input-group:focus-within {
     border-radius: 0.25rem;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* O brilho azul do Bootstrap */
-    border: 1px solid #86b7fe; /* A cor da borda azul */
+    box-shadow: 0 0 0 0.25rem rgba(44, 62, 80, 0.25); /* Brilho baseado no seu azul */
+    border: 1px solid #2c3e50 !important; 
   }
 
-  /* Remove a borda padrão do input para não duplicar o efeito */
+  /* Remove bordas internas para parecer uma peça única */
   .input-group:focus-within .form-control, 
+  .input-group:focus-within .form-select,
   .input-group:focus-within .input-group-text {
-    border-color: transparent;
+    border-color: transparent !important;
     box-shadow: none;
+  }
+  
+  /* Mantém o padrão visual das etiquetas azuis */
+  .custom-label {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
   }
 </style>
 
+
   <body>
-    <nav class="navbar navbar-dark" style="background-color: #2c3e50;">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">
-      <img src="carrovermelho.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
-         Checklist Veicular
-    </a>
-  </div>
-</nav>
+ <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="{% static 'image_65e9fb.png' %}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+          Checklist Veicular
+        </a>
+      </div>
+    </nav>
 
- <div class="container mt-4">
-  <div class="d-flex justify-content-start align-items-center">
+<form action="{% url 'nome_da_sua_view' %}" method="POST">
+  {% csrf_token %}
+
+  <div class="d-flex justify-content-start align-items-center flex-wrap gap-3">
     
-    <!-- Primeira Caixa (RE) -->
-    <div class="input-group w-auto border rounded me-3"> <!-- me-3 cria o espaço entre as caixas -->
-      <span class="input-group-text text-white border-0" style="background-color: #2c3e50;">RE:</span>
-      <input type="text" class="form-control border-0" placeholder="59-XXXXX" style="width: 150px;">
-    </div>
-
-    <!-- Segunda Caixa (Ex: Nome do colaborador) -->
+    <!-- RE -->
     <div class="input-group w-auto border rounded">
-      <span class="input-group-text text-white border-0" style="background-color: #2c3e50;">Nome:</span>
-      <!-- style="width: 150px" acomoda bem cerca de 10 caracteres -->
-      <input type="text" class="form-control border-0" placeholder="EX.João Silva" style="width: 150px;">
+      <span class="input-group-text custom-label">RE:</span>
+      <input type="text" name="re_colaborador" class="form-control border-0" placeholder="59-XXXXX" style="width: 130px;">
     </div>
 
+    <!-- Nome -->
+    <div class="input-group w-auto border rounded">
+      <span class="input-group-text custom-label">Nome:</span>
+      <input type="text" name="nome_colaborador" class="form-control border-0" placeholder="Digite aqui" style="width: 150px;">
+    </div>
+
+    <!-- Modelo -->
+    <div class="input-group w-auto border rounded">
+      <span class="input-group-text custom-label">Modelo:</span>
+      <select name="modelo_veiculo" class="form-select border-0" style="width: 180px;">
+        <option selected disabled>Selecione...</option>
+        <option value="fiorino">Fiat Fiorino</option>
+        <option value="master">Renault Master</option>
+      </select>
+    </div>
+
+    <!-- Placa (Agora com NAME para o Django coletar) -->
+    <div class="input-group w-auto border rounded">
+      <span class="input-group-text custom-label">Placa:</span>
+      <input type="text" name="placa_veiculo" class="form-control border-0" placeholder="ABC-1234" style="width: 120px;">
+    </div>
+
+    <button type="submit" class="btn btn-success">Salvar Checklist</button>
   </div>
-</div>
+</form>
 
 
 </div>
