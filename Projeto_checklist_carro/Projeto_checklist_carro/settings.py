@@ -118,3 +118,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+import os
+
+# Caminho onde o Django vai procurar arquivos estáticos nos seus apps
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'app_checklist', 'static'),
+]
+
+# Configuração padrão para o campo de ID dos modelos
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
