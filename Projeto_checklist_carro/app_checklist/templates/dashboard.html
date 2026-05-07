@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Supervisor - Frota</title>
+    
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; 
+            margin: 0; 
+            padding: 20px; 
+            color: #1e293b;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h2 { margin: 0; color: #1a202c; font-size: 1.4rem; }
+
+        .btn-logout {
+            background-color: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover { background-color: #dc2626; }
+
+        .table-card {
+            background: white;
+            padding: 20px; /* Adicionado padding para os controles do datatable respirarem */
+            border-radius: 15px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100% !important; /* DataTables precisa do 100% */
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 15px 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        tr:hover { background-color: #f8fafc; }
+
+        /* Estilização Customizada para os campos do DataTables */
+        .dataTables_filter input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-left: 10px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .dataTables_length select {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-foto {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #dbeafe;
+            color: #2563eb;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .btn-foto:hover { background-color: #2563eb; color: white; }
+
+        .btn-avaria {
+            background-color: #ffedd5;
+            color: #9a3412;
+        }
+        .btn-avaria:hover { background-color: #9a3412; color: white; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            background: #e2e8f0;
+        }
+
+        .placa-badge {
+            font-family: 'Courier New', Courier, monospace;
+            background: #1e293b;
+            color: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .avaria-text {
+            color: #c2410c;
+            font-style: italic;
+            max-width: 200px;
+            display: block;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; text-align: center; }
+            .table-card { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <div class="header">
+            <div>
+                <h2>📊 Painel de Controle</h2>
+                <span style="font-size: 0.8rem; color: #94a3b8;">Supervisor: {{ user.username }}</span>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">Sair do Sistema</a>
+        </div>
+
+        <div class="table-card">
+            <table id="tabela-frota">
+                <thead>
+                    <tr>
+                        <th>Data/ID</th>
+                        <th>Motorista</th>
+                        <th>Veículo / Placa</th>
+                        <th>Status/Comb.</th>
+                        <th>Avarias / Notas</th>
+                        <th>Fotos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in checklists %}
+                    <tr>
+                        <td style="color: #94a3b8; font-size: 0.75rem;">
+                            #{{ c.id }}<br>
+                            {{ c.data_criacao|date:"d/m H:i" }}
+                        </td>
+                        <td>
+                            <strong>{{ c.usuario.get_full_name|default:c.usuario.username }}</strong><br>
+                            <small style="color: #64748b;">Mat: {{ c.matricula }}</small>
+                        </td>
+                        <td>
+                            {{ c.modelo }}<br>
+                            <span class="placa-badge">{{ c.placa }}</span>
+                        </td>
+                        <td>
+                            <span class="badge">⛽ {{ c.combustivel }}</span><br>
+                            <span style="font-size: 0.7rem;">💧 Água: {{ c.agua }} | 🛢️ Óleo: {{ c.oleo }}</span>
+                        </td>
+                        <td>
+                            {% if c.avaria_detalhes %}
+                                <span class="avaria-text">⚠️ {{ c.avaria_detalhes }}</span>
+                            {% else %}
+                                <span style="color: #22c55e;">✅ Sem avarias</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; width: fit-content;">
+                                {% if c.foto_frente %}<a href="{{ c.foto_frente.url }}" target="_blank" class="btn-foto">Frente</a>{% endif %}
+                                {% if c.foto_traseira %}<a href="{{ c.foto_traseira.url }}" target="_blank" class="btn-foto">Traseira</a>{% endif %}
+                                {% if c.foto_motorista %}<a href="{{ c.foto_motorista.url }}" target="_blank" class="btn-foto">Lado Mot.</a>{% endif %}
+                                {% if c.foto_passageiro %}<a href="{{ c.foto_passageiro.url }}" target="_blank" class="btn-foto">Lado Pass.</a>{% endif %}
+                                {% if c.foto_avaria %}
+                                    <a href="{{ c.foto_avaria.url }}" target="_blank" class="btn-foto btn-avaria">📸 Ver Dano</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#tabela-frota').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                },
+                "order": [[0, "desc"]], // Começa mostrando o mais recente
+                "pageLength": 10,
+                "responsive": true
+            });
+        });
+    </script>
+</body>
+</html>

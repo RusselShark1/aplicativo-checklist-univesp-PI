@@ -6,27 +6,70 @@
     <title>Checklist Frota</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        
         body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        
         .container { background: #ffffff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); width: 100%; max-width: 450px; }
-        h2 { color: #1a202c; text-align: center; margin-bottom: 25px; }
+        
+        h2 { color: #1a202c; text-align: center; margin-bottom: 25px; margin-top: 10px; }
+        
+        .user-menu { text-align: right; font-size: 0.8rem; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; color: #718096; }
+        .user-menu a { color: #2563eb; text-decoration: none; font-weight: 600; margin-left: 10px; }
+        .user-menu a:hover { text-decoration: underline; }
+
         .form-group { margin-bottom: 15px; }
+        
         label { display: block; font-size: 0.9rem; font-weight: 600; color: #4a5568; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        button { width: 100%; background-color: #2563eb; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .secao { border-top: 1px solid #eee; margin: 20px 0; padding-top: 10px; color: #718096; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input[type="text"], input[type="number"], select, textarea { 
+            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; transition: border-color 0.2s; font-family: inherit;
+        }
+        
+        input:focus, select:focus, textarea:focus { border-color: #2563eb; outline: none; }
+
+        .radio-group { display: flex; gap: 20px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 5px; }
+        .radio-option { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; color: #4a5568; font-weight: 600; }
+
+        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-input-button {
+            display: block; background-color: #f8fafc; border: 2px dashed #cbd5e1; color: #64748b; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+        }
+        .file-input-wrapper:hover .file-input-button { background-color: #f1f5f9; border-color: #2563eb; color: #2563eb; }
+        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+        button { width: 100%; background-color: #2563eb; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background 0.2s; }
+        button:hover { background-color: #1d4ed8; }
+        
+        .secao { border-top: 1px solid #eee; margin: 25px 0 15px 0; padding-top: 15px; color: #2563eb; font-size: 0.8rem; text-transform: uppercase; border-left: 4px solid #2563eb; padding-left: 10px; font-weight: bold; }
+        
+        #container_avaria { display: none; }
+        .secao-avaria { background-color: #fffaf0; border-left: 4px solid #f6ad55; color: #c05621; margin-top: 20px; }
+        .avaria-label { color: #c05621; }
+
+        .msg-sucesso { background: #dcfce7; color: #166534; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <div class="user-menu">
+            Usuário: <b>{{ user.username }}</b> | 
+            <a href="{% url 'mudar_senha' %}">Mudar Senha</a> | 
+            <a href="{% url 'logout' %}">Sair</a>
+        </div>
+
         <h2>Checklist Frota</h2>
 
-        <form method="POST">
+        {% if mensagem %}
+            <div class="msg-sucesso">{{ mensagem }}</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="form-group">
                 <label>Motorista</label>
-                <input type="text" name="usuario" required>
+                <input type="text" name="usuario" value="{{ user.get_full_name|default:user.username }}" required>
             </div>
 
             <div class="form-group">
@@ -65,9 +108,9 @@
             <div class="form-group">
                 <label>Combustível</label>
                 <select name="combustivel" required>
-                    <option value="1/4">1/4 (Reserva/Baixo)</option>
-                    <option value="1/2">1/2 (Meio Tanque)</option>
-                    <option value="3/4">3/4 (Quase Cheio)</option>
+                    <option value="1/4">1/4</option>
+                    <option value="1/2">1/2</option>
+                    <option value="3/4">3/4</option>
                     <option value="Cheio">Cheio</option>
                 </select>
             </div>
@@ -77,9 +120,93 @@
                 <input type="number" name="km" required>
             </div>
 
+            <div class="secao">Fotos do Veículo</div>
+
+            <div class="form-group"><label>Foto Frente</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-button">📸 Foto da Frente</div>
+                    <input type="file" name="frente" accept="image/*" capture="camera" onchange="updateLabel(this)">
+                </div>
+            </div>
+
+            <div class="form-group"><label>Foto Traseira</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-button">📸 Foto da Traseira</div>
+                    <input type="file" name="traseira" accept="image/*" capture="camera" onchange="updateLabel(this)">
+                </div>
+            </div>
+
+            <div class="form-group"><label>Lado Motorista</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-button">📸 Lado Motorista</div>
+                    <input type="file" name="motorista" accept="image/*" capture="camera" onchange="updateLabel(this)">
+                </div>
+            </div>
+
+            <div class="form-group"><label>Lado Passageiro</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-button">📸 Lado Passageiro</div>
+                    <input type="file" name="passageiro" accept="image/*" capture="camera" onchange="updateLabel(this)">
+                </div>
+            </div>
+
+            <div class="secao" style="border-left-color: #718096; color: #4a5568;">Estado da Lataria</div>
+            <div class="form-group">
+                <label>O veículo possui alguma avaria?</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="tem_avaria" value="sim" id="btn_sim"> Sim
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="tem_avaria" value="nao" id="btn_nao" checked> Não
+                    </label>
+                </div>
+            </div>
+
+            <div id="container_avaria">
+                <div class="secao secao-avaria">⚠️ Detalhes da Avaria</div>
+                <div class="form-group">
+                    <label class="avaria-label">Descreva o dano</label>
+                    <textarea name="avaria_detalhes" rows="3" placeholder="Ex: Risco na porta traseira..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="avaria-label">Foto do Dano</label>
+                    <div class="file-input-wrapper">
+                        <div class="file-input-button" style="border-color: #f6ad55; color: #c05621;">📸 Tirar Foto do Dano</div>
+                        <input type="file" name="foto_avaria" accept="image/*" capture="camera" onchange="updateLabel(this)">
+                    </div>
+                </div>
+            </div>
+
             <button type="submit">Enviar Checklist</button>
         </form>
     </div>
 
+    <script>
+        function updateLabel(input) {
+            if (input.files && input.files.length > 0) {
+                const button = input.previousElementSibling;
+                button.innerHTML = "✅ Foto Selecionada";
+                button.style.borderColor = "#22c55e";
+                button.style.color = "#16a34a";
+                button.style.backgroundColor = "#f0fdf4";
+            }
+        }
+
+        const btnSim = document.getElementById('btn_sim');
+        const btnNao = document.getElementById('btn_nao');
+        const containerAvaria = document.getElementById('container_avaria');
+
+        function toggleAvaria() {
+            if (btnSim.checked) {
+                containerAvaria.style.display = 'block';
+            } else {
+                containerAvaria.style.display = 'none';
+            }
+        }
+
+        btnSim.addEventListener('change', toggleAvaria);
+        btnNao.addEventListener('change', toggleAvaria);
+    </script>
 </body>
 </html>

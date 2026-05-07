@@ -2,6 +2,7 @@
 Django settings for Projeto_checklist_carro project.
 """
 
+import os  # ADICIONADO: Necessário para configurar as pastas de mídia
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -110,6 +111,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# --- CONFIGURAÇÕES DE IMAGENS (MEDIA) ---
+
+# URL que o navegador usa para acessar os arquivos
+MEDIA_URL = '/media/'
+
+# Pasta física no seu computador onde as fotos serão salvas
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ---------------------------------------
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field

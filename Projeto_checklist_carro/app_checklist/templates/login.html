@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso - Checklist Frota</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #f0f2f5 0%, #c3cfe2 100%); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+
+        .login-card { 
+            background: #ffffff; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); 
+            width: 100%; 
+            max-width: 380px; 
+            text-align: center;
+        }
+
+        .login-card h2 { 
+            color: #1a202c; 
+            margin-bottom: 10px; 
+            font-size: 1.5rem;
+        }
+
+        .login-card p {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .form-group { 
+            margin-bottom: 20px; 
+            text-align: left;
+        }
+
+        label { 
+            display: block; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            color: #4a5568; 
+            margin-bottom: 8px; 
+            margin-left: 4px;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            box-sizing: border-box; 
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+
+        input:focus { 
+            border-color: #2563eb; 
+            outline: none; 
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        button { 
+            width: 100%; 
+            background-color: #2563eb; 
+            color: white; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        button:hover { 
+            background-color: #1d4ed8; 
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error-msg { 
+            background-color: #fff5f5;
+            color: #c53030; 
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            border: 1px solid #feb2b2;
+        }
+
+        .footer-info {
+            margin-top: 25px;
+            font-size: 0.75rem;
+            color: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Bem-vindo</h2>
+        <p>Acesse o Checklist Frota Univesp</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" name="usuario" placeholder="Digite seu usuário" required>
+            </div>
+
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" name="senha" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit">Entrar no Sistema</button>
+
+            {% if mensagem %}
+                <div class="error-msg">
+                    {{ mensagem }}
+                </div>
+            {% endif %}
+        </form>
+
+        <div class="footer-info">
+            &
