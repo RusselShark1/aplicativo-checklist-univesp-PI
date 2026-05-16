@@ -45,7 +45,6 @@ def mudar_senha(request):
         form = PasswordChangeForm(request.user)
     return render(request, 'mudar_senha.html', {'form': form})
 
-# 5. FORMULÁRIO DE CHECKLIST (COM VÍNCULO AUTOMÁTICO)
 @login_required
 def cadastrar(request):
     mensagem = ""
@@ -67,7 +66,7 @@ def cadastrar(request):
 
        
         novo_registro = UsuarioTeste(
-            usuario=request.user, # O Django identifica o ID do motorista sozinho
+            usuario=request.user,
             km=v_km, 
             matricula=v_matricula, 
             placa=v_placa, 

@@ -2,7 +2,7 @@
 Django settings for Projeto_checklist_carro project.
 """
 
-import os  # ADICIONADO: Necessário para configurar as pastas de mídia
+import os 
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -18,7 +18,6 @@ SECRET_KEY = 'django-insecure-1gdkfy+v7-7625q-2zx4a=8_q=705bl^g1cr+5*-0kd@^j9+0l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALTERADO: Permite que outros dispositivos na rede (como seu celular) acessem o site
 ALLOWED_HOSTS = ['*']
 
 
@@ -97,7 +96,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-# ALTERADO: Deixa o Django em Português e com horário de Brasília
 LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'America/Sao_Paulo'
@@ -112,12 +110,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# --- CONFIGURAÇÕES DE IMAGENS (MEDIA) ---
-
-# URL que o navegador usa para acessar os arquivos
 MEDIA_URL = '/media/'
 
-# Pasta física no seu computador onde as fotos serão salvas
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # ---------------------------------------

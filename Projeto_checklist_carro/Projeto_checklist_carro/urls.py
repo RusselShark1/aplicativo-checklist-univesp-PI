@@ -8,6 +8,5 @@ urlpatterns = [
     path('', include('app_checklist.urls')),
 ]
 
-# ADICIONADO: Isso diz ao Django onde procurar as imagens durante o desenvolvimento
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
